@@ -1,112 +1,115 @@
 # Wikipedia Discord Bot
 
-A Discord bot built with Python that allows users to search, summarize, and explore Wikipedia articles directly within Discord channels using rich embeds.
+A Python Discord bot for searching, summarizing, and exploring Wikipedia through
+public slash-command responses.
 
 ## Features
 
-- Search Wikipedia articles for top matching terms.
-- Fetch concise 5-sentence summaries with direct source links and images.
-- Discover random Wikipedia topics on demand.
-- Simple command interface using the `>w` prefix.
-- Secure configuration using environment variables for tokens.
+- Search Wikipedia for up to 20 matching article titles.
+- Read five-sentence article summaries with source links and thumbnails.
+- Discover random Wikipedia articles.
+- Use a discoverable `/wiki` slash-command group instead of message prefixes.
+- Show the command, requester, and input at the beginning of every response so
+  everyone in the channel understands its context.
 
-## Prerequisites
+## Requirements
 
-To run this bot, ensure your system meets the following minimum requirements:
+- Python 3.8 or newer (Python 3.10+ recommended)
+- A Discord application and bot token
 
-- **Python:** Version 3.8 or higher (3.10+ recommended)
-- **Libraries:**
-  - discord.py >= 2.0.0
-  - wikipedia >= 1.4.0
-  - python-dotenv >= 1.0.0
+Install the pinned dependencies with:
 
-## Discord Developer Portal Configuration
+```bash
+pip install -r requirements.txt
+```
 
-Before starting the bot, configure your Discord Application:
+## Discord Application Setup
 
-1. Open the [Discord Developer Portal](https://discord.com/developers/applications).
-2. Create a new Application (or select your existing application).
-3. Go to the **Bot** tab on the left-hand menu.
-4. Copy or reset your **Bot Token** (store this securely).
-5. Scroll down to **Privileged Gateway Intents**.
-6. Enable **MESSAGE CONTENT INTENT** (toggle to ON).
-7. Save your changes.
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications)
+   and create or select an application.
+2. On the **Bot** page, create the bot and copy its token. The Message Content
+   privileged intent is not required and can remain disabled.
+3. In **OAuth2 > URL Generator**, select the `bot` and `applications.commands`
+   scopes, select the permissions needed to view and send messages in the target
+   channels, and use the generated URL to install the bot.
+4. If the bot was installed previously without application commands, reinstall it
+   using a URL containing both scopes.
 
-## Installation and Setup
+## Installation
 
-1. **Clone the repository:**
+1. Clone the repository and enter it:
 
    ```bash
-   git clone https://github.com/marceliodes/wiki-bot-discord.git
-   cd wiki-bot-discord
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
    ```
 
-2. **Create a virtual environment:**
+2. Create and activate a virtual environment:
 
    ```bash
    python3 -m venv .venv
+   source .venv/bin/activate
    ```
 
-3. **Activate the virtual environment:**
+   On Windows PowerShell, activate it with `.venv\Scripts\Activate.ps1`.
 
-   - **Linux / macOS:**
-
-     ```bash
-     source .venv/bin/activate
-     ```
-
-   - **Windows (Command Prompt):**
-
-     ```cmd
-     .venv\Scripts\activate.bat
-     ```
-
-   - **Windows (PowerShell):**
-
-     ```powershell
-     .venv\Scripts\Activate.ps1
-     ```
-
-4. **Install required packages:**
+3. Install dependencies:
 
    ```bash
-   pip install discord.py wikipedia python-dotenv
+   pip install -r requirements.txt
    ```
 
-5. **Configure environment variables:**
+4. Copy `.env.example` to `.env` and replace the placeholder with the bot token:
 
-   Create a `.env` file in the root directory (alongside `main.py`):
-
-   ```
+   ```dotenv
    DISCORD_TOKEN=your_actual_bot_token_here
    ```
 
 ## Running the Bot
 
-Start the bot by running `main.py` inside your active virtual environment:
-
 ```bash
 python3 main.py
 ```
 
-### Local Hosting Behavior
+At startup, the bot globally synchronizes its `/wiki` command group with Discord.
+Global command changes may take some time to appear in every server. The terminal
+logs the synchronization count and connection status. Stopping the process takes
+the bot offline.
 
-Running the script hosts the bot directly on your local machine. Terminating the terminal session or shutting down the computer will stop the process and take the bot offline.
+## Commands
 
-## Available Commands
+| Command | Description |
+|---|---|
+| `/wiki search query:<text>` | Display up to 20 matching Wikipedia article titles. |
+| `/wiki article title:<text>` | Display a five-sentence article summary, image, and source link. |
+| `/wiki random` | Display a random Wikipedia article. |
+| `/wiki about` | Display bot information and licensing credits. |
+| `/wiki help` | Display the command list. |
 
-| Command | Syntax | Description |
-|---|---|---|
-| **Search** | `>w search <term>` | Displays up to 20 matching Wikipedia article titles. |
-| **Wiki** | `>w wiki <term>` | Displays a 5-sentence summary and image from the requested page. |
-| **Random** | `>w random` | Fetches a summary and image for a random Wikipedia page. |
-| **About** | `>w about` | Displays bot information and licensing credits. |
-| **Help** | `>w help` | Shows a list of commands and usage syntax. |
+All replies are public. A response starts with context similar to:
+
+```text
+Command used: /wiki search • Requested by: @member • Query: “Ada Lovelace”
+```
+
+The requester is displayed without generating a new mention notification.
+
+## Project Structure
+
+- `main.py` configures and starts the Discord client and synchronizes commands.
+- `wiki_bot/commands.py` defines the `/wiki` command group and interaction flow.
+- `wiki_bot/service.py` runs the synchronous Wikipedia client away from Discord's
+  event loop.
+- `wiki_bot/responses.py` creates consistent context lines and embeds.
+- `tests/` contains network-free unit tests.
+
+## Testing
+
+```bash
+python3 -m unittest discover -s tests -v
+```
 
 ## License
 
 This project is licensed under the **GNU General Public License v3.0 (GPLv3)**.
-
-Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications under the same license. Copyright and license notices must be preserved.
-
-See the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) for full details.
+See the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html) for details.

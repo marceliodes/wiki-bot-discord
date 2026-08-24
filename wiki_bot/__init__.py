@@ -1,0 +1,2 @@
+"""Discord Wikipedia bot package."""
+
